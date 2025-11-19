@@ -1,4 +1,4 @@
-package com.example.chat_agent_back.chat.main.config;
+package com.example.chat_agent_back.common.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
