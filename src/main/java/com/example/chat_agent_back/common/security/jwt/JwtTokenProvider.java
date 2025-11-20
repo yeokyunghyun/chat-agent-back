@@ -18,11 +18,27 @@ public class JwtTokenProvider {
     @Value("${jwt.access-token-expire}")
     private long accessTokenExpire;
 
+    @Value("${jwt.refresh-token-expire}")
+    private long refreshTokenExpire;
+
     // 토큰 생성
-    public String createToken(String username) {
+    public String createAccessToken(String username) {
 
         Date now = new Date();
         Date validity = new Date(now.getTime() + accessTokenExpire);
+
+        return Jwts.builder()
+                .setSubject(username)
+                .setIssuedAt(now)
+                .setExpiration(validity)
+                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .compact();
+    }
+
+    public String createRefreshToken(String username) {
+
+        Date now = new Date();
+        Date validity = new Date(now.getTime() + refreshTokenExpire);
 
         return Jwts.builder()
                 .setSubject(username)

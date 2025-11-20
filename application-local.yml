@@ -12,9 +12,15 @@ spring:
       hibernate:
         format_sql: true
         show_sql: true
+
+  redis:
+    host: localhost
+    port: 6379
+
 server:
   port: 8443
 
 jwt:
   secret: mysecretkey123456789012345678900
   access-token-expire: 3600000 # 1시간
+  refresh-token-expire: 3600000 * 24
