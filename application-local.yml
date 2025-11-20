@@ -16,5 +16,5 @@ server:
   port: 8443
 
 jwt:
-  secret: mysecretkey12345678901234567890
+  secret: mysecretkey123456789012345678900
   access-token-expire: 3600000 # 1시간
