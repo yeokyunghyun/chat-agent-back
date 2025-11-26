@@ -1,6 +1,6 @@
 package com.example.chat_agent_back.common.security.jwt;
 
-import com.example.chat_agent_back.common.security.CustomUserDetailsService;
+import com.example.chat_agent_back.domain.user.service.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

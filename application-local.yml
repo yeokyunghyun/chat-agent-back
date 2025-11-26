@@ -23,4 +23,4 @@ server:
 jwt:
   secret: mysecretkey123456789012345678900
   access-token-expire: 3600000 # 1시간
-  refresh-token-expire: 3600000 * 24
+  refresh-token-expire: 36000000

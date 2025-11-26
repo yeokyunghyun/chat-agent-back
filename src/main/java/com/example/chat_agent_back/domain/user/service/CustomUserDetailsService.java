@@ -1,4 +1,4 @@
-package com.example.chat_agent_back.common.security;
+package com.example.chat_agent_back.domain.user.service;
 
 import com.example.chat_agent_back.domain.user.entity.User;
 import com.example.chat_agent_back.domain.user.repository.UserRepository;

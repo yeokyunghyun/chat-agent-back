@@ -10,6 +10,7 @@ import com.example.chat_agent_back.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -55,24 +56,30 @@ public class AuthServiceImpl implements AuthService{
         UsernamePasswordAuthenticationToken authToken
                 = new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword());
 
-        Authentication authentication = authManagerBuilder.getObject().authenticate(authToken);
-        // UserDetailService에서 loadUserByUsername
-        // passwordEncoder.matches(rawPassword, encodedPassword);
+        try {
+            Authentication authentication = authManagerBuilder.getObject().authenticate(authToken);
+            String accessToken = jwtTokenProvider.createAccessToken(authentication.getName());
+            String refreshToken = jwtTokenProvider.createRefreshToken(authentication.getName());
 
-        String accessToken = jwtTokenProvider.createAccessToken(authentication.getName());
-        String refreshToken = jwtTokenProvider.createRefreshToken(authentication.getName());
+            redisTemplate.opsForValue().set(
+                    "refresh:" + authentication.getName(),
+                    refreshToken,
+                    7,
+                    TimeUnit.DAYS
+            );
+            return ResponseEntity.ok(Map.of(
+                    "accessToken", accessToken,
+                    "refreshToken", refreshToken
+            ));
+        } catch (Exception ex) {
 
-        redisTemplate.opsForValue().set(
-                "refresh:" + authentication.getName(),
-                refreshToken,
-                7,
-                TimeUnit.DAYS
-        );
+            System.out.println("로그인 실패: " + ex.getMessage());
 
-        return ResponseEntity.ok(Map.of(
-                "accessToken", accessToken,
-                "refreshToken", refreshToken
-        ));
+            // 실패 응답 반환
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", ex.getMessage()));
+        }
     }
 
     @Override
