@@ -5,6 +5,13 @@ spring:
     password: 6235
     driver-class-name: org.postgresql.Driver
 
+
+#none	        DDL 생성 X, 아무것도 안 함
+#validate	    엔티티와 DB 스키마 비교 → 불일치 시 오류
+#update	        테이블 있으면 유지, 없으면 생성
+#create	        매 실행마다 테이블 새로 생성 (기존 삭제)
+#create-drop	실행 시 생성, 종료 시 drop
+
   jpa:
     hibernate:
       ddl-auto: update
