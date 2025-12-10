@@ -7,8 +7,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChatMessage {
-    private String userId;
+public class ChatRequest {
+    private String id;
     private String customerId;
-    private String content;
+    private String customerName;
+    private String requestTime;
+    private String status;
 }
