@@ -1,4 +1,4 @@
-package com.example.chat_agent_back.domain.inquiry;
+package com.example.chat_agent_back.domain.inquiry.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
