@@ -12,7 +12,7 @@ import java.util.List;
 public class InquiryTypeTreeResponse {
 
     private Long id;
-    private String label;
+    private String title;
     private List<InquiryTypeTreeResponse> children;
 
 }

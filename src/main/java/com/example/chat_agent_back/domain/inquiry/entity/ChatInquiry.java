@@ -28,4 +28,13 @@ public class ChatInquiry {
     private String chngId;
     private LocalDateTime chngDttm;
 
+    @PrePersist
+    public void prePersist() {
+        this.regrDttm = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.chngDttm = LocalDateTime.now();
+    }
 }
