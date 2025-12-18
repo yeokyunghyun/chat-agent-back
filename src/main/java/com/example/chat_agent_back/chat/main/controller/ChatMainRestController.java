@@ -1,10 +1,15 @@
-package com.example.chat_agent_back.chat.main;
+package com.example.chat_agent_back.chat.main.controller;
 
 import com.example.chat_agent_back.chat.main.dto.ChatMessage;
 import com.example.chat_agent_back.chat.main.dto.ChatRequest;
+import com.example.chat_agent_back.chat.main.dto.ChatStatusUpdateRequest;
+import com.example.chat_agent_back.chat.main.service.ChatMainService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,6 +21,7 @@ public class ChatMainRestController {
 
     private final SimpMessagingTemplate messagingTemplate;
     private final RestTemplate restTemplate;
+    private final ChatMainService chatMainService;
 
     // 신규 상담 요청 전달 (고객 register 시 호출됨)
     @PostMapping("/api/requests")
@@ -32,11 +38,36 @@ public class ChatMainRestController {
     }
 
     // 상담사 => 고객 메시지
-    @PostMapping("/api/agent/send")
-    public void sendToCustomer(@RequestBody ChatMessage message) {
-        // Node 주소/포트에 맞춰서 수정
+    @MessageMapping("/agent/send")
+    public void sendToCustomer(ChatMessage message) {
         String nodeUrl = "http://localhost:3000/api/send-to-customer";
         restTemplate.postForEntity(nodeUrl, message, Void.class);
         System.out.println("상담사 => 고객 메시지 = " + message.toString());
     }
+
+    // 상담사 상태 조회 (로그인한 사용자 기준)
+    @PostMapping("/api/stat/select")
+    public ResponseEntity<String> selectStat(Authentication authentication) {
+        String userId =  authentication.getName();
+        String status = chatMainService.getAgentStatus(userId);
+        return ResponseEntity.ok(status);
+    }
+
+    // 상담사 상태 변경
+    @PostMapping(value = "/api/stat/update", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> updateStatJson(Authentication authentication,
+                                            @RequestBody ChatStatusUpdateRequest req) {
+        String userId = authentication.getName();
+        String status = req.getStatus();
+
+        chatMainService.updateAgentStatus(userId, status);
+
+//        messagingTemplate.convertAndSend("/topic/agent/status", Map.of(
+//                "userId", userId,
+//                "status", status
+//        ));
+
+        return ResponseEntity.ok().build();
+    }
+
 }
