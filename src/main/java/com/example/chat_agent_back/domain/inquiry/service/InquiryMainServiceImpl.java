@@ -1,5 +1,6 @@
 package com.example.chat_agent_back.domain.inquiry.service;
 
+import com.example.chat_agent_back.domain.inquiry.dto.request.InquiryTypeDeleteRequest;
 import com.example.chat_agent_back.domain.inquiry.dto.request.InquiryTypeInsertRequest;
 import com.example.chat_agent_back.domain.inquiry.dto.request.InquiryTypeNameUpdateRequest;
 import com.example.chat_agent_back.domain.inquiry.dto.response.InquiryTypeTreeResponse;
@@ -65,6 +66,28 @@ public class InquiryMainServiceImpl implements InquiryMainService{
         inquiryMainRepository.save(updateNode);
     }
 
+    @Override
+    @Transactional
+    public void deleteInquiryType(InquiryTypeDeleteRequest request) {
+
+        Long targetId = request.getId();
+
+        // 전체 조회
+        List<ChatInquiry> all = inquiryMainRepository.findAll();
+
+        // parentId 기준 그룹핑
+        Map<Long, List<ChatInquiry>> groupByParent =
+                all.stream().collect(Collectors.groupingBy(ci ->
+                        ci.getParentId() == null ? ROOT_KEY : ci.getParentId()
+                ));
+
+        // 삭제할 ID들 수집
+        List<Long> deleteIds = collectDeleteIds(targetId, groupByParent);
+
+        // 삭제 실행
+        inquiryMainRepository.deleteAllById(deleteIds);
+    }
+
     private InquiryTypeTreeResponse buildTree(
             ChatInquiry node,
             Map<Long, List<ChatInquiry>> groupByParent
@@ -82,5 +105,20 @@ public class InquiryMainServiceImpl implements InquiryMainService{
                 .build();
     }
 
+    private List<Long> collectDeleteIds(
+            Long currentId,
+            Map<Long, List<ChatInquiry>> groupByParent
+    ) {
+        List<Long> result = new java.util.ArrayList<>();
+        result.add(currentId);
+
+        List<ChatInquiry> children = groupByParent.get(currentId);
+        if (children != null) {
+            for (ChatInquiry child : children) {
+                result.addAll(collectDeleteIds(child.getId(), groupByParent));
+            }
+        }
+        return result;
+    }
 
 }

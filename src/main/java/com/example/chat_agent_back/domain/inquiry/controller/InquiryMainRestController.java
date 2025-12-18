@@ -1,5 +1,6 @@
 package com.example.chat_agent_back.domain.inquiry.controller;
 
+import com.example.chat_agent_back.domain.inquiry.dto.request.InquiryTypeDeleteRequest;
 import com.example.chat_agent_back.domain.inquiry.dto.request.InquiryTypeInsertRequest;
 import com.example.chat_agent_back.domain.inquiry.dto.request.InquiryTypeNameUpdateRequest;
 import com.example.chat_agent_back.domain.inquiry.dto.response.InquiryTypeTreeResponse;
@@ -35,6 +36,12 @@ public class InquiryMainRestController {
     @PostMapping("/api/update/inquiryTypeName")
     public ResponseEntity<Void> updateInquiryTypeName(@RequestBody InquiryTypeNameUpdateRequest request) {
         inquiryMainService.updateInquiryTypeName(request);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/api/delete/inquiryType")
+    public ResponseEntity<Void> deleteInquiryType(@RequestBody InquiryTypeDeleteRequest request) {
+        inquiryMainService.deleteInquiryType(request);
         return ResponseEntity.ok().build();
     }
 }
