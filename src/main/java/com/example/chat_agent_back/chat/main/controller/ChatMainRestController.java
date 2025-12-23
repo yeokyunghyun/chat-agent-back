@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Map;
+
 @RestController
 @RequiredArgsConstructor
 public class ChatMainRestController {
@@ -26,7 +28,8 @@ public class ChatMainRestController {
     // 신규 상담 요청 전달 (고객 register 시 호출됨)
     @PostMapping("/api/requests")
     public void sendNewRequest(@RequestBody ChatRequest req) {
-        messagingTemplate.convertAndSend("/topic/agent/requests", req);
+//        messagingTemplate.convertAndSend("/topic/agent/requests", req);
+        chatMainService.insertChatRequest(req);
         System.out.println("신규 상담 요청 = " + req.toString());
     }
 
@@ -68,6 +71,17 @@ public class ChatMainRestController {
 //        ));
 
         return ResponseEntity.ok().build();
+    }
+
+    // 상담사가 상담건 클릭 시
+    @PostMapping("/api/agent/start")
+    public void startConsultation(@RequestBody ChatRequest req) {
+        // Node 서버에 알림
+        restTemplate.postForEntity(
+                "http://localhost:3000/api/consultation-started",
+                Map.of("customerId", req.getCustomerId()),
+                Void.class
+        );
     }
 
 }

@@ -1,5 +1,9 @@
 package com.example.chat_agent_back.chat.main.service;
 
+import com.example.chat_agent_back.chat.main.dto.ChatRequest;
+import com.example.chat_agent_back.domain.cust.entity.CustReady;
+import com.example.chat_agent_back.domain.cust.mapper.CustReadyMapper;
+import com.example.chat_agent_back.domain.cust.repository.CustReadyRepositry;
 import com.example.chat_agent_back.domain.user.entity.UserReady;
 import com.example.chat_agent_back.domain.user.repository.UserReadyRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,8 +17,15 @@ import java.util.Set;
 public class ChatMainServiceImpl implements ChatMainService{
 
     private final UserReadyRepository userReadyRepository;
+    private final CustReadyRepositry custReadyRepositry;
 
     private static final Set<String> ALLOWED = Set.of("READY", "NOT_READY");
+
+    @Override
+    public void insertChatRequest(ChatRequest req) {
+        CustReady custReady = CustReadyMapper.from(req);
+        custReadyRepositry.save(custReady);
+    }
 
     @Override
     @Transactional(readOnly = true)

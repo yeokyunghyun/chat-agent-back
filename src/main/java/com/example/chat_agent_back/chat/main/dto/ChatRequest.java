@@ -4,13 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChatRequest {
-    private String id;
     private String customerId;
     private String customerName;
-    private String requestTime;
+    LocalDateTime requestTime;
     private String status;
 }

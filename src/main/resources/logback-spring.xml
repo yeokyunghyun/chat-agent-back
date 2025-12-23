@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- ✅ Spring Boot 기본 로깅(색/패턴/CONSOLE appender) 가져오기 -->
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+
+    <!-- ✅ CONSOLE appender에 필터를 “추가”로만 건다 -->
+    <appender name="FILTERED_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <!-- ✅ 부트 기본 컬러 패턴 사용 -->
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+        </encoder>
+
+        <!-- ✅ 라우터 구간(MDC=suppressSql)일 때만 Hibernate SQL 로그 drop -->
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator class="ch.qos.logback.classic.boolex.JaninoEventEvaluator">
+                <expression>
+                    mdc.get("suppressSql") != null
+                    &amp;&amp; (
+                    logger.equals("org.hibernate.SQL")
+                    || logger.equals("org.hibernate.orm.jdbc.bind")
+                    || logger.startsWith("org.hibernate.type.descriptor.sql")
+                    )
+                </expression>
+            </evaluator>
+            <OnMatch>DENY</OnMatch>
+            <OnMismatch>NEUTRAL</OnMismatch>
+        </filter>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="FILTERED_CONSOLE"/>
+    </root>
+
+</configuration>
