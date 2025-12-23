@@ -30,6 +30,8 @@ public class AuthServiceImpl implements AuthService{
     private final AuthenticationManagerBuilder authManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTemplate<String, String> redisTemplate;
+    private final UserReadyService userReadyService;
+
     @Override
     public ResponseEntity<?> register(RegisterRequest request) {
         if (userRepository.findByUserName(request.getUsername()).isPresent()) {
@@ -57,8 +59,10 @@ public class AuthServiceImpl implements AuthService{
 
         try {
             Authentication authentication = authManagerBuilder.getObject().authenticate(authToken);
-            String accessToken = jwtTokenProvider.createAccessToken(authentication.getName());
-            String refreshToken = jwtTokenProvider.createRefreshToken(authentication.getName());
+
+            String userId =  authentication.getName();
+            String accessToken = jwtTokenProvider.createAccessToken(userId);
+            String refreshToken = jwtTokenProvider.createRefreshToken(userId);
 
             redisTemplate.opsForValue().set(
                     "refresh:" + authentication.getName(),
@@ -66,6 +70,10 @@ public class AuthServiceImpl implements AuthService{
                     7,
                     TimeUnit.DAYS
             );
+
+            // 로그인 성공 시 yl_user_ready 테이블 적재
+            userReadyService.upsertReadyOnLogin(userId);
+
             return ResponseEntity.ok(Map.of(
                     "accessToken", accessToken,
                     "refreshToken", refreshToken
