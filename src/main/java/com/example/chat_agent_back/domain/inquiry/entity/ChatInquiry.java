@@ -1,4 +1,4 @@
-package com.example.chat_agent_back.domain.inquiry;
+package com.example.chat_agent_back.domain.inquiry.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -17,15 +17,10 @@ public class ChatInquiry {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long inqId;
+    private Long id;
+    private Long parentId;
 
-    /*
-       orphanRemoval = true
-       ex) inquiry.getButtons().remove(button); 이 때 db 데이터 지워짐
-     */
-    @OneToMany(mappedBy = "inquiry", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ChatInquiryButton> buttons = new ArrayList<>();
-    private Long inqBtnId;
+    private String title;
 
     private String regrId;
     private LocalDateTime regrDttm;
@@ -33,4 +28,13 @@ public class ChatInquiry {
     private String chngId;
     private LocalDateTime chngDttm;
 
+    @PrePersist
+    public void prePersist() {
+        this.regrDttm = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.chngDttm = LocalDateTime.now();
+    }
 }
