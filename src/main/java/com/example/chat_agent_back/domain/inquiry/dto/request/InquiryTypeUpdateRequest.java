@@ -7,7 +7,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class InquiryTypeNameUpdateRequest {
+public class InquiryTypeUpdateRequest {
     private Long id;
     private String title;
+    private String content;
+    private String type;
 }

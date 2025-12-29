@@ -27,6 +27,8 @@ public class ChatInquiry {
 
     private String chngId;
     private LocalDateTime chngDttm;
+    private String content;
+    private String type;
 
     @PrePersist
     public void prePersist() {

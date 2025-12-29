@@ -2,7 +2,7 @@ package com.example.chat_agent_back.domain.inquiry.service;
 
 import com.example.chat_agent_back.domain.inquiry.dto.request.InquiryTypeDeleteRequest;
 import com.example.chat_agent_back.domain.inquiry.dto.request.InquiryTypeInsertRequest;
-import com.example.chat_agent_back.domain.inquiry.dto.request.InquiryTypeNameUpdateRequest;
+import com.example.chat_agent_back.domain.inquiry.dto.request.InquiryTypeUpdateRequest;
 import com.example.chat_agent_back.domain.inquiry.dto.response.InquiryTypeTreeResponse;
 import com.example.chat_agent_back.domain.inquiry.entity.ChatInquiry;
 import com.example.chat_agent_back.domain.inquiry.repository.InquiryMainRepository;
@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,18 +50,23 @@ public class InquiryMainServiceImpl implements InquiryMainService{
         newNode.setParentId(request.getParentId());
         newNode.setRegrId(request.getUsername());
         newNode.setTitle(request.getTitle());
+        newNode.setContent(request.getContent());
+        newNode.setType(request.getType());
 
         inquiryMainRepository.save(newNode);
     }
 
     @Override
     @Transactional
-    public void updateInquiryTypeName(InquiryTypeNameUpdateRequest request) {
+    public void updateInquiryType(InquiryTypeUpdateRequest request) {
         ChatInquiry updateNode = inquiryMainRepository.findById(request.getId()).orElseThrow(() ->
                 new IllegalArgumentException("존재하지 않는 문의유형입니다.")
         );
 
         updateNode.setTitle(request.getTitle());
+        updateNode.setContent(request.getContent());
+        updateNode.setType(request.getType());
+
         inquiryMainRepository.save(updateNode);
     }
 
@@ -101,6 +105,8 @@ public class InquiryMainServiceImpl implements InquiryMainService{
         return InquiryTypeTreeResponse.builder()
                 .id(node.getId())
                 .title(node.getTitle())
+                .content(node.getContent())
+                .type(node.getType())
                 .children(children.isEmpty() ? null : children)
                 .build();
     }

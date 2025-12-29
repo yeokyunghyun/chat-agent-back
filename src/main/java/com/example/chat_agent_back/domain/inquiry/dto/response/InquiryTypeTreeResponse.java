@@ -13,6 +13,8 @@ public class InquiryTypeTreeResponse {
 
     private Long id;
     private String title;
+    private String content;
+    private String type;
     private List<InquiryTypeTreeResponse> children;
 
 }

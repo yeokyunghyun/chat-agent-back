@@ -2,7 +2,7 @@ package com.example.chat_agent_back.domain.inquiry.controller;
 
 import com.example.chat_agent_back.domain.inquiry.dto.request.InquiryTypeDeleteRequest;
 import com.example.chat_agent_back.domain.inquiry.dto.request.InquiryTypeInsertRequest;
-import com.example.chat_agent_back.domain.inquiry.dto.request.InquiryTypeNameUpdateRequest;
+import com.example.chat_agent_back.domain.inquiry.dto.request.InquiryTypeUpdateRequest;
 import com.example.chat_agent_back.domain.inquiry.dto.response.InquiryTypeTreeResponse;
 import com.example.chat_agent_back.domain.inquiry.service.InquiryMainService;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,8 @@ public class InquiryMainRestController {
 
     @GetMapping("/api/select/inquiryTypeTree")
     public List<InquiryTypeTreeResponse> getInquiryTypeTree() {
-        return inquiryMainService.getInquiryTypeTree();
+        List<InquiryTypeTreeResponse> inquiryTypeTree = inquiryMainService.getInquiryTypeTree();
+        return inquiryTypeTree;
     }
 
     @PostMapping("/api/insert/inquiryType")
@@ -33,9 +34,9 @@ public class InquiryMainRestController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/api/update/inquiryTypeName")
-    public ResponseEntity<Void> updateInquiryTypeName(@RequestBody InquiryTypeNameUpdateRequest request) {
-        inquiryMainService.updateInquiryTypeName(request);
+    @PostMapping("/api/update/inquiryType")
+    public ResponseEntity<Void> updateInquiryTypeName(@RequestBody InquiryTypeUpdateRequest request) {
+        inquiryMainService.updateInquiryType(request);
         return ResponseEntity.ok().build();
     }
 
