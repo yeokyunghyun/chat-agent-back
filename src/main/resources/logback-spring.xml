@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
+    <!-- Spring 프로퍼티: ELK Logstash 연동 (application.yaml의 elk.logstash) -->
+    <springProperty name="LOGSTASH_HOST" source="elk.logstash.host" defaultValue="localhost"/>
+    <springProperty name="LOGSTASH_PORT" source="elk.logstash.port" defaultValue="5044"/>
+
     <!-- ✅ Spring Boot 기본 로깅(색/패턴/CONSOLE appender) 가져오기 -->
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
     <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
@@ -28,6 +32,22 @@
             <OnMismatch>NEUTRAL</OnMismatch>
         </filter>
     </appender>
+
+    <!-- ELK: Logstash로 JSON 로그 전송 (TCP) -->
+    <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <destination>${LOGSTASH_HOST}:${LOGSTASH_PORT}</destination>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <includeMdcKeyName>userId</includeMdcKeyName>
+            <includeMdcKeyName>requestId</includeMdcKeyName>
+            <customFields>{"service":"${spring.application.name:-chat-agent-back}"}</customFields>
+        </encoder>
+        <keepAliveDuration>5 seconds</keepAliveDuration>
+    </appender>
+
+    <!-- Kibana(ELK)에는 ChatMainRestController API 진입 로그만 전송 -->
+    <logger name="com.example.chat_agent_back.chat.main.controller.ChatMainRestController" level="INFO" additivity="true">
+        <appender-ref ref="LOGSTASH"/>
+    </logger>
 
     <root level="INFO">
         <appender-ref ref="FILTERED_CONSOLE"/>

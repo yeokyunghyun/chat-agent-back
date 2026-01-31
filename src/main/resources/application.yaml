@@ -1,3 +1,16 @@
 spring:
   application:
     name: chat-agent-back
+
+# ELK 스택 연동 (로컬: Logstash 5044, Elasticsearch 9200, Kibana 5601)
+elk:
+  logstash:
+    host: localhost
+    port: 5044
+  elasticsearch:
+    host: localhost
+    port: 9200
+    url: http://localhost:9200
+  kibana:
+    port: 5601
+    url: http://localhost:5601
